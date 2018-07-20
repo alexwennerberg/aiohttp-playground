@@ -3,6 +3,9 @@ import requests
 import aiohttp
 import asyncio
 
+# https://www.artificialworlds.net/blog/2017/05/31/python-3-large-numbers-of-tasks-with-limited-concurrency/
+use this article ^
+
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()
@@ -26,12 +29,12 @@ async def get_all(calls):
     tasks = []
     async with aiohttp.ClientSession() as session:
         for call in calls:
-            task = asyncio.ensure_future(fetch(
+            task = fetch(
                 session=session, 
-                url=call))
+                url=call)
             tasks.append(task)
-            responses = asyncio.gather(*tasks)
-            await responses
+        for res in asyncio.as_completed(tasks):
+            print(await res)
 
 # use a semaphore
 
